@@ -1,8 +1,9 @@
 import asyncio
 import base64
+import mimetypes
 from pathlib import Path
 
-from agent_defs import image_proc_agent, slide_generation_agent
+from agent_defs import manager_agent
 from agents import Runner
 from dotenv import load_dotenv
 
@@ -18,8 +19,14 @@ def image_to_image_data_str(image):
         raise Exception(f"サポートされていない画像形式です (画像 {image})")
 
 
+def image_path_to_image_data(image_path):
+    mime_type, _ = mimetypes.guess_type(image_path)
+    image_data = image_to_image_data_str(image_path)
+    return mime_type, image_data
+
+
 order = "2.1節で勉強会をやりたいのでこれらの内容を詳細にまとめて、HTMLのスライドにして下さい。"
-image_paths = ["/path/to/image1", "/path/to/image2", "/path/to/image3"]
+image_paths = ["/path/to/image1", "/path/to/image12", "/path/to/image3"]
 
 
 async def main():
@@ -27,22 +34,17 @@ async def main():
     content += [
         {
             "type": "input_image",
-            "image_url": f"data:image/jpeg;base64,{image_to_image_data_str(image_path)}",
+            "image_url": f"data:{mime_type};base64,{image_data}",
         }
-        for image_path in image_paths
+        for mime_type, image_data in [
+            image_path_to_image_data(image_path) for image_path in image_paths
+        ]
     ]
     msg = [{"role": "user", "content": content}]
-    result = await Runner.run(image_proc_agent, msg)
-
-    slide_contents = result.final_output.model_dump()
-    msg = f"""
-        以下の内容を使ってHTMLを作成して下さい。
-        # 内容
-        {slide_contents}
-        """
-    result = await Runner.run(slide_generation_agent, msg)
+    result = await Runner.run(manager_agent, msg)
+    print(result.final_output)
     with Path("result.html").open("w") as f:
-        f.write(result.final_output.html)
+        f.write(result.final_output.result)
 
 
 if __name__ == "__main__":

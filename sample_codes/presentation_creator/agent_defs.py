@@ -58,7 +58,35 @@ class GeneratedHTML(BaseModel):
     "htmlを使うにあたって、気をつけるべきこと"
 
 
-slide_generation_agent = Agent(
-    name="Slide Generation Agent", instructions=instruction, output_type=GeneratedHTML
+html_slide_generation_agent = Agent(
+    name="HTML Slide Generation Agent",
+    instructions=instruction,
+    output_type=GeneratedHTML,
+)
+
+
+class GeneratedResult(BaseModel):
+    result: str
+    "生成の結果"
+    result_type: str
+    "生成の結果のタイプ html, jsonなど"
+    comment: str
+    "生成結果に対するコメント"
+
+
+manager_agent = Agent(
+    name="Slide Generator Agent",
+    instructions="あなたはスライドの作成をサポートするエージェントです。",
+    output_type=GeneratedResult,
+    tools=[
+        image_proc_agent.as_tool(
+            tool_name="image_to_slide_items",
+            tool_description="与えられた画像を解析しスライドの要素に書き換えます。",
+        ),
+        html_slide_generation_agent.as_tool(
+            tool_name="slide_items_to_html",
+            tool_description="スライドの要素をもとにHTMLドキュメントを作成します。",
+        ),
+    ],
 )
 # image_proc_agent.handoffs = [slide_generation_agent]
