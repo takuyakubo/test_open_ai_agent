@@ -10,12 +10,6 @@ load_dotenv()
 
 order = "2.1節で勉強会をやりたいのでこれらの内容を詳細にまとめて、HTMLのスライドにして下さい。"
 image_paths = ["/path/to/image1", "/path/to/image12", "/path/to/image3"]
-image_paths = [
-    "/Users/takuyakubo/Desktop/転移学習スクショ/2章/2.1/IMG_0162.PNG",
-    "/Users/takuyakubo/Desktop/転移学習スクショ/2章/2.1/IMG_0163.PNG",
-    "/Users/takuyakubo/Desktop/転移学習スクショ/2章/2.1/IMG_0164.PNG",
-]
-
 
 async def main():
     content = [{"type": "input_text", "text": order}]
