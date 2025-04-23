@@ -11,6 +11,7 @@ load_dotenv()
 order = "2.1節で勉強会をやりたいのでこれらの内容を詳細にまとめて、HTMLのスライドにして下さい。"
 image_paths = ["/path/to/image1", "/path/to/image12", "/path/to/image3"]
 
+
 async def main():
     content = [{"type": "input_text", "text": order}]
     content += image_paths_to_image_data_lists_open_ai(image_paths)
