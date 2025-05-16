@@ -13,6 +13,13 @@ logfire.configure(
 # This method automatically patches the OpenAI Agents SDK to send logs via OTLP to Langfuse.
 logfire.instrument_openai_agents()
 
+from agents.tracing import GLOBAL_TRACE_PROVIDER
+from agents.tracing.processors import BackendSpanExporter
+class OffBackendSpanExporter(BackendSpanExporter):
+    def export(*args, **kwargs):
+        pass
+GLOBAL_TRACE_PROVIDER.wrapped._multi_processor._processors[0]._exporter = OffBackendSpanExporter()
+
 # sample
 
 from agents.models.openai_chatcompletions import OpenAIChatCompletionsModel as Model_
